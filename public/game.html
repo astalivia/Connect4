@@ -1,0 +1,459 @@
+<html lang="en">
+<head>
+    <title>Connect 4</title>
+    <link href="https://fonts.cdnfonts.com/css/helsinki" rel="stylesheet">
+    <style>
+        body {
+            margin: 0px;
+        }
+
+        .connect-4-game {
+            position: absolute;
+            margin: auto;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            width: 1200px;
+            height: 1000px;
+            font-family: 'Helsinki', sans-serif;
+        }
+        .title-box {
+            width: 48%;
+            height: 10%;
+            position: absolute;
+            left: 0px;
+            right: 0px;
+            top: 50px;
+            border-top: 10px solid black;
+            border-bottom: 10px solid black;
+            border-left: 10px solid black;
+            border-right: 10px solid black;
+            margin: 0px auto 0px auto;
+            font-size: 65px;
+            line-height: 100px;
+            text-align: center;
+        }
+        .winner-box {
+            width: 48%;
+            height: 10%;
+            position: absolute;
+            left: 0px;
+            right: 0px;
+            bottom: 50px;
+            border-top: 10px solid black;
+            border-bottom: 10px solid black;
+            border-left: 10px solid black;
+            border-right: 10px solid black;
+            margin: 0px auto 0px auto;
+            font-size: 65px;
+            line-height: 100px;
+            text-align: center;
+        }
+        .reset-box {
+            width: 10%;
+            height: 43%;
+            position: absolute;
+            top: 0px;
+            bottom: 0px;
+            left: 50px;
+            border-top: 10px solid black;
+            border-bottom: 10px solid black;
+            border-left: 10px solid black;
+            border-right: 10px solid black;
+            margin: auto 0px auto 0px;
+            font-size: 65px;
+            line-height: 100px;
+            text-align: center;
+            writing-mode: vertical-rl;
+            rotate: 180deg;
+            cursor: pointer;
+        }
+        .chip-box {
+            width: 10%;
+            height: 43%;
+            position: absolute;
+            top: 0px;
+            bottom: 0px;
+            right: 50px;
+            border-top: 10px solid black;
+            border-bottom: 10px solid black;
+            border-left: 10px solid black;
+            border-right: 10px solid black;
+            margin: auto 0px auto 0px;
+            --sqr-width: 75px;
+            display: flex;
+            justify-content: space-around;
+            flex-direction: column;
+            align-items: center;
+        }
+        .chip-box > .chip {
+            display: block;
+            position: static;
+            margin: 0;
+            opacity: 0.5;
+        }
+        .chip-box > .chip.selected {
+            opacity: 1;
+        }
+
+
+        .chip {
+            width: var(--sqr-width);
+            height: var(--sqr-width);
+            position: absolute;
+            top: 0px;
+            left: 100px;
+            margin-top: calc(var(--sqr-width)/-2);
+            margin-left: calc(var(--sqr-width)/-2);
+            border-radius: 50%;
+            box-sizing: border-box;
+            transition: top calc(1000ms/975*100) cubic-bezier(1,1.5,.07,.82);
+            pointer-events: none;
+        }
+        .chip-r {
+            border: calc(var(--sqr-width)/7) solid rgb(144, 47, 47);
+            background-color: red;
+        }
+        .chip-y {
+            border: calc(var(--sqr-width)/7) solid rgb(156, 156, 34);
+            background-color: yellow;
+        }
+        .c-r-1 {
+            transition-duration: calc(1000ms/975*100);
+            top: calc(var(--sep-width) + var(--sqr-width)/2);
+        }
+        .c-r-2 {
+            transition-duration: calc(1000ms/975*275);
+            top: calc(var(--sep-width)*2 + var(--sqr-width)*3/2);
+        }
+        .c-r-3 {
+            transition-duration: calc(1000ms/975*450);
+            top: calc(var(--sep-width)*3 + var(--sqr-width)*5/2);
+        }
+        .c-r-4 {
+            transition-duration: calc(1000ms/975*625);
+            top: calc(var(--sep-width)*4 + var(--sqr-width)*7/2);
+        }
+        .c-r-5 {
+            transition-duration: calc(1000ms/975*800);
+            top: calc(var(--sep-width)*5 + var(--sqr-width)*9/2);
+        }
+        .c-r-6 {
+            transition-duration: calc(1000ms/975*975);
+            top: calc(var(--sep-width)*6 + var(--sqr-width)*11/2);
+        }
+        .c-c-1 {
+            left: calc(var(--sep-width) + var(--sqr-width)/2);
+        }
+        .c-c-2 {
+            left: calc(var(--sep-width)*2 + var(--sqr-width)*3/2);
+        }
+        .c-c-3 {
+            left: calc(var(--sep-width)*3 + var(--sqr-width)*5/2);
+        }
+        .c-c-4 {
+            left: calc(var(--sep-width)*4 + var(--sqr-width)*7/2);
+        }
+        .c-c-5 {
+            left: calc(var(--sep-width)*5 + var(--sqr-width)*9/2);
+        }
+        .c-c-6 {
+            left: calc(var(--sep-width)*6 + var(--sqr-width)*11/2);
+        }
+        .c-c-7 {
+            left: calc(var(--sep-width)*7 + var(--sqr-width)*13/2);
+        }
+
+        .column {
+            width: var(--sep-width);
+            height: calc(var(--sqr-width)*6 + var(--sep-width)*7);
+            background-color: black;
+            position: absolute;
+            top: 0px;
+            pointer-events: none;
+        }
+        .column:nth-of-type(1) {
+            left: 0;
+        }
+        .column:nth-of-type(2) {
+            left: calc(var(--sqr-width) + var(--sep-width));
+        }
+        .column:nth-of-type(3) {
+            left: calc(calc(var(--sqr-width) + var(--sep-width))*2);
+        }
+        .column:nth-of-type(4) {
+            left: calc(calc(var(--sqr-width) + var(--sep-width))*3);
+        }
+        .column:nth-of-type(5) {
+            left: calc(calc(var(--sqr-width) + var(--sep-width))*4);
+        }
+        .column:nth-of-type(6) {
+            left: calc(calc(var(--sqr-width) + var(--sep-width))*5);
+        }
+        .column:nth-of-type(7) {
+            left: calc(calc(var(--sqr-width) + var(--sep-width))*6);
+        }
+        .column:nth-of-type(8) {
+            left: calc(calc(var(--sqr-width) + var(--sep-width))*7);
+        }
+
+        .row {
+            width: calc(var(--sqr-width)*7 + var(--sep-width)*8);
+            height: var(--sep-width);
+            background-color: black;
+            position: absolute;
+            left: 0px;
+            pointer-events: none;
+        }
+        .row:nth-of-type(1) {
+            top: 0;
+        }
+        .row:nth-of-type(2) {
+            top: calc(var(--sqr-width) + var(--sep-width));
+        }
+        .row:nth-of-type(3) {
+            top: calc(calc(var(--sqr-width) + var(--sep-width))*2);
+        }
+        .row:nth-of-type(4) {
+            top: calc(calc(var(--sqr-width) + var(--sep-width))*3);
+        }
+        .row:nth-of-type(5) {
+            top: calc(calc(var(--sqr-width) + var(--sep-width))*4);
+        }
+        .row:nth-of-type(6) {
+            top: calc(calc(var(--sqr-width) + var(--sep-width))*5);
+        }
+        .row:nth-of-type(7) {
+            top: calc(calc(var(--sqr-width) + var(--sep-width))*6);
+        }
+        .chip-rack {
+            --sqr-width: 75px;
+            --sep-width: 10px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            margin-top: calc(var(--sqr-width)*-6/2 + var(--sep-width)*-7/2);
+            margin-left: calc(var(--sqr-width)*-7/2 + var(--sep-width)*-8/2);
+            width: calc(var(--sqr-width)*7 + var(--sep-width)*8);
+            height: calc(var(--sqr-width)*6 + var(--sep-width)*7);
+        }
+        .chips {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="connect-4-game">
+        <div class="title-box">
+            connect 4
+        </div>
+        <div class="winner-box">
+            player 1's turn
+        </div>
+        <div class="reset-box">
+            reset
+        </div>
+        <div class="chip-box">
+            <div class="chip chip-r"></div>
+            <div class="chip chip-y"></div>
+        </div>
+        <div class="chip-rack">
+            <div id="focus-1" class="chips"></div>
+            <div class="rows">
+                <div class="row"></div>
+                <div class="row"></div>
+                <div class="row"></div>
+                <div class="row"></div>
+                <div class="row"></div>
+                <div class="row"></div>
+                <div class="row"></div>
+            </div>
+            <div class="columns">
+                <div class="column"></div>
+                <div class="column"></div>
+                <div class="column"></div>
+                <div class="column"></div>
+                <div class="column"></div>
+                <div class="column"></div>
+                <div class="column"></div>
+                <div class="column"></div>
+            </div>
+        </div>
+    </div>
+    <script>
+        class Connect4 {
+            constructor(focus) {
+                this.numRows = 6;
+                this.numCols = 7;
+                this.chipGrid = [[],[],[],[],[],[],[]];
+                this.player = 0;
+                this.focus = document.getElementById(focus);
+            }
+
+            async dropChip(color, column) {
+                if (this.chipGrid[column].length < this.numRows) {
+                    var row = this.chipGrid[column].length;
+                }
+                else return null;
+                
+                let chip = document.createElement("div");
+                this.chipGrid[column].push(chip);
+                chip.setAttribute("class", `chip chip-${color=="yellow" ? "y" : "r"} c-c-${column+1}`);
+                this.focus.appendChild(chip);
+                await this.delayMS(100);
+                chip.classList.add(`c-r-${this.numRows-row}`);
+                let location = {
+                    col: column,
+                    row
+                }
+                return location
+            }
+
+            async delayMS(ms) {
+                return new Promise((resolve, reject) => {
+                    setTimeout(() => {
+                        resolve()
+                    }, ms)
+                })
+            }
+
+            async fillBoard() {
+                for (let i = 0; i < this.numRows; i++) {
+                    for (let j = 0; j < this.numCols; j++) {
+                        let chip = await this.dropChip(parseInt(Math.random()*2) == 1 ? "yellow" : "red", j);
+                    }
+                }
+            }
+
+            clearBoard() {
+                this.chipGrid = [[],[],[],[],[],[],[]];
+                this.focus.innerHTML = "";
+            }
+        }
+
+        class Connect4Game {
+
+            constructor(connect4, winnerBox, resetBox, chipBox) {
+                this.connect4 = connect4;
+                this.winnerBox = winnerBox;
+                this.resetBox = resetBox;
+                this.chipBox = chipBox;
+                this.winner = null;
+                this.player = 1;
+                this.gameOngoing = true;
+                this.printTurn(this.player);
+                this.connect4.focus.addEventListener("click", (e) => {
+                    this.performAction(e);
+                })
+                this.resetBox.addEventListener("click", () => {this.reset()});
+            }
+
+            switchPlayer(player) {
+                if (player == undefined) {
+                    this.player = this.player == 0 ? 1 : 0
+                }
+                else {
+                    this.player = player;
+                }
+            }
+
+            reset() {
+                this.connect4.clearBoard();
+                this.player = 1;
+                this.printTurn(this.player);
+                this.winner = null;
+                this.gameOngoing = true;
+            }
+
+            async performAction(e) {
+                if (!this.gameOngoing) {
+                    return;
+                }
+                let colIndex = parseInt(e.offsetX*7/this.connect4.focus.clientWidth);
+                let location = await this.connect4.dropChip(this.player == 1 ? "yellow" : "red", colIndex);
+                if (location == null) {
+                    return null;
+                }
+                if (this.checkForWinner(location)) {
+                    this.winner = this.player;
+                    console.log("winner:", this.player);
+                    this.printWinner(this.player);
+                    this.gameOngoing = false;
+                }          
+                else {
+                    this.switchPlayer();
+                    this.printTurn(this.player);
+                }
+            }
+
+            printTurn(player) {
+                this.chipBox.children[this.player].classList.add("selected");
+                this.chipBox.children[this.player == 0 ? 1 : 0].classList.remove("selected");
+                this.winnerBox.innerHTML = `${this.player == 0 ? "<span style='color: red'>red's</span>" : "<span style='color: yellow'>yellow's</span>"} turn`;
+            }
+
+            printWinner(player) {
+                this.winnerBox.innerHTML = `winner: ${
+                    this.player == 0 ? "<span style='color: red'>red</span>" : "<span style='color: yellow'>yellow</span>"
+                }`;
+            }
+
+            checkForWinner(location) {
+                console.log(location);
+                let chip = this.connect4.chipGrid[location.col][location.row];
+                let chipColor = chip.classList.contains("chip-r") ? "r" : "y"
+                let directions = [
+                    [1,1], //top right and bottom left
+                    [1,0], //right and left
+                    [1,-1], //bottom right and top left
+                    [0,-1] //bottom and top
+                ]
+
+                let self = this.connect4;
+                function countChips(dir) {
+                    let counter = 0;
+                    for (let j = 1; j < 4; j++) {
+                        let targetCoord = {
+                            col: location.col + dir[0]*j,
+                            row: location.row + dir[1]*j, 
+                        }
+                        let targetChip = self.chipGrid[targetCoord.col]?.[targetCoord.row];
+                        if (targetChip) { //able to pull a chip, now check if colors match
+                            let targetColor = targetChip.classList.contains("chip-r") ? "r" : "y";
+                            if (chipColor == targetColor) { //chip colors match
+                                counter++;
+                            } 
+                            else { //detected different color, skipped
+                                break;
+                            }
+                        }
+                        else { //detected undefined, skipped
+                            break;
+                        }
+                    }
+                    return counter;
+                }
+
+                for (let i = 0; i < directions.length; i++) {
+                    let dir = directions[i];
+                    let oppDir = [dir[0]*-1, dir[1]*-1];
+                    let totalCount = countChips(dir) + countChips(oppDir);
+                    if (totalCount >= 3) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+        }
+
+        let c4 = new Connect4(`focus-${1}`);
+        let winnerBox = document.getElementsByClassName("winner-box")[0]
+        let resetBox = document.getElementsByClassName("reset-box")[0]
+        let chipBox = document.getElementsByClassName("chip-box")[0]
+        let c4Game = new Connect4Game(c4, winnerBox, resetBox, chipBox)
+
+    </script>
+</body>
+</html>
